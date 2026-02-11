@@ -42,6 +42,7 @@ This repo includes:
 
 - `scripts/render_pdfs.sh`: renders PDFs for all `songs/<slug>/*.mscz`
 - `.githooks/pre-commit`: auto-renders and stages matching PDFs when staged `.mscz` files change
+- `.github/workflows/render-pdfs.yml`: GitHub Action to render PDFs from changed `.mscz` files for collaborators
 
 Enable the hook once per clone:
 
@@ -56,6 +57,11 @@ bash scripts/render_pdfs.sh
 ```
 
 Note: this requires MuseScore CLI (`musescore` or `mscore`) installed on your machine.
+
+In GitHub:
+
+- On `push` with `.mscz` changes, the action renders PDFs and commits them back to the branch.
+- On `pull_request` with `.mscz` changes, the action verifies PDFs are up to date before merge.
 
 ## Naming Rules
 

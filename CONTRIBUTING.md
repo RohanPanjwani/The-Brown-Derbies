@@ -18,6 +18,10 @@ git config core.hooksPath .githooks
 
 With this enabled, committing staged `.mscz` files will auto-render and stage matching PDFs.
 
+Repository-level automation:
+
+- GitHub Actions also auto-renders PDFs on pushes that include `.mscz` changes.
+
 ## Required Files Per Song
 
 Each song folder must include:

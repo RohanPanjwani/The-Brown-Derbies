@@ -1,0 +1,138 @@
+name: Render PDFs from MuseScore
+
+on:
+  push:
+    paths:
+      - 'songs/**/*.mscz'
+  pull_request:
+    paths:
+      - 'songs/**/*.mscz'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  auto-render-on-push:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install MuseScore
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musescore xvfb
+
+      - name: Render changed files
+        id: render
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pick_musescore_cmd() {
+            for cmd in musescore mscore musescore4; do
+              if command -v "$cmd" >/dev/null 2>&1; then
+                echo "$cmd"
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          MSCORE_CMD="$(pick_musescore_cmd)"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            mapfile -t changed_mscz < <(find songs -mindepth 2 -maxdepth 2 -type f -name '*.mscz' | sort)
+          else
+            BASE_SHA="${{ github.event.before }}"
+            if [[ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+              mapfile -t changed_mscz < <(find songs -mindepth 2 -maxdepth 2 -type f -name '*.mscz' | sort)
+            else
+              mapfile -t changed_mscz < <(git diff --name-only "$BASE_SHA" "${{ github.sha }}" -- 'songs/*/*.mscz' | sort)
+            fi
+          fi
+
+          if [[ ${#changed_mscz[@]} -eq 0 ]]; then
+            echo "No changed .mscz files"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          for mscz in "${changed_mscz[@]}"; do
+            pdf="${mscz%.mscz}.pdf"
+            xvfb-run -a "$MSCORE_CMD" -o "$pdf" "$mscz"
+            echo "Rendered $pdf"
+          done
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push rendered PDFs
+        if: steps.render.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add songs/*/*.pdf
+          if git diff --cached --quiet; then
+            echo "No PDF changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Auto-render PDFs from changed MSCZ"
+          git push
+
+  check-render-on-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install MuseScore
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musescore xvfb
+
+      - name: Verify PDFs are up to date
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pick_musescore_cmd() {
+            for cmd in musescore mscore musescore4; do
+              if command -v "$cmd" >/dev/null 2>&1; then
+                echo "$cmd"
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          MSCORE_CMD="$(pick_musescore_cmd)"
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          mapfile -t changed_mscz < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'songs/*/*.mscz' | sort)
+
+          if [[ ${#changed_mscz[@]} -eq 0 ]]; then
+            echo "No changed .mscz files"
+            exit 0
+          fi
+
+          for mscz in "${changed_mscz[@]}"; do
+            pdf="${mscz%.mscz}.pdf"
+            xvfb-run -a "$MSCORE_CMD" -o "$pdf" "$mscz"
+          done
+
+          if ! git diff --quiet -- songs/*/*.pdf; then
+            echo "PDFs are out of date with MSCZ changes."
+            echo "Run local render and commit updated PDFs before merging."
+            exit 1
+          fi
