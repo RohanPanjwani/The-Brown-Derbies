@@ -1,0 +1,17 @@
+name: Validate Sheet Music Library
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-pairs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate song file pairs
+        run: bash scripts/validate_pairs.sh

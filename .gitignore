@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# MuseScore temporary / backup style files (if present)
+*.mscz~
+*.mscx~
+*.bak
+
+# Generic temp files
+*.tmp
