@@ -55,4 +55,4 @@ bash scripts/new_song.sh valerie
 
 - PDF matches latest `.mscz` content
 - Voice parts and rehearsal markings are readable
-- Song catalog row in `songs/README.md` is updated
+- Song catalog row in `songs/song-catalog.md` is updated

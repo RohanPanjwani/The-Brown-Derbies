@@ -7,7 +7,7 @@ This repository keeps each song's MuseScore source (`.mscz`) paired with a match
 ## Quick Access
 
 - Latest library: this repo's `main` branch
-- Song catalog: [`songs/README.md`](songs/README.md)
+- Song catalog: [`songs/song-catalog.md`](songs/song-catalog.md)
 - Song template: [`songs/_TEMPLATE/`](songs/_TEMPLATE/)
 
 ## Repository Structure
@@ -29,7 +29,7 @@ songs/
 3. Ensure both files exist:
    - `<slug>.mscz`
    - `<slug>.pdf`
-4. Update `songs/README.md` with the song entry
+4. Update `songs/song-catalog.md` with the song entry
 5. Open a pull request
 
 CI will fail if any song is missing either the `.mscz` or `.pdf` pair.
