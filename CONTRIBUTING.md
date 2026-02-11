@@ -10,19 +10,27 @@
 4. Open a pull request
 5. Wait for review and CI checks
 
+Optional automation:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+With this enabled, committing staged `.mscz` files will auto-render and stage matching PDFs.
+
 ## Required Files Per Song
 
 Each song folder must include:
 
-- One MuseScore source file (`.mscz`) in `source/`
-- One PDF in `exports/`
+- One MuseScore source file (`.mscz`) in the song folder
+- One PDF in the song folder
 
 Example:
 
 ```text
 songs/valerie/
-  source/valerie.mscz
-  exports/valerie.pdf
+  valerie.mscz
+  valerie.pdf
 ```
 
 You can scaffold the folder quickly with:

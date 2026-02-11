@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+pick_musescore_cmd() {
+  for cmd in musescore mscore musescore4; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      echo "$cmd"
+      return 0
+    fi
+  done
+  return 1
+}
+
+mapfile -t staged_mscz < <(git diff --cached --name-only --diff-filter=ACMR | grep '^songs/.\+\.mscz$' || true)
+
+if [[ ${#staged_mscz[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+if ! MSCORE_CMD="$(pick_musescore_cmd)"; then
+  echo "ERROR: Staged .mscz changes detected but MuseScore CLI is not available."
+  echo "Install MuseScore CLI or export matching PDFs manually before commit."
+  exit 1
+fi
+
+for rel_path in "${staged_mscz[@]}"; do
+  input="$ROOT_DIR/$rel_path"
+  output="$ROOT_DIR/${rel_path%.mscz}.pdf"
+  "$MSCORE_CMD" -o "$output" "$input"
+  git add "$output"
+  echo "Updated and staged: ${rel_path%.mscz}.pdf"
+done

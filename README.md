@@ -16,10 +16,8 @@ This repository keeps each song's MuseScore source (`.mscz`) paired with a match
 songs/
   _TEMPLATE/
   song-title-slug/
-    source/
-      song-title-slug.mscz
-    exports/
-      song-title-slug.pdf
+    song-title-slug.mscz
+    song-title-slug.pdf
     notes/
       changelog.md
 ```
@@ -29,12 +27,35 @@ songs/
 1. Create a branch: `song/<title-or-change>`
 2. Create folder scaffolding: `bash scripts/new_song.sh <song-title-slug>` (or add/update an existing folder)
 3. Ensure both files exist:
-   - `source/<slug>.mscz`
-   - `exports/<slug>.pdf`
+   - `<slug>.mscz`
+   - `<slug>.pdf`
 4. Update `songs/README.md` with the song entry
 5. Open a pull request
 
 CI will fail if any song is missing either the `.mscz` or `.pdf` pair.
+
+## Auto-Update PDFs From MSCZ
+
+Yes, this can be automated.
+
+This repo includes:
+
+- `scripts/render_pdfs.sh`: renders PDFs for all `songs/<slug>/*.mscz`
+- `.githooks/pre-commit`: auto-renders and stages matching PDFs when staged `.mscz` files change
+
+Enable the hook once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Manual render command:
+
+```bash
+bash scripts/render_pdfs.sh
+```
+
+Note: this requires MuseScore CLI (`musescore` or `mscore`) installed on your machine.
 
 ## Naming Rules
 

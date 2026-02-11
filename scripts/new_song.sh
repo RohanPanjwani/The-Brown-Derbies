@@ -21,7 +21,7 @@ if [[ -d "$song_dir" ]]; then
   exit 1
 fi
 
-mkdir -p "$song_dir/source" "$song_dir/exports" "$song_dir/notes"
+mkdir -p "$song_dir/notes"
 
 cat > "$song_dir/notes/changelog.md" <<EON
 # Changelog
@@ -37,4 +37,4 @@ cat > "$song_dir/notes/changelog.md" <<EON
 EON
 
 echo "Created songs/$slug"
-echo "Next: add source/$slug.mscz and exports/$slug.pdf"
+echo "Next: add $slug.mscz and $slug.pdf in songs/$slug/"

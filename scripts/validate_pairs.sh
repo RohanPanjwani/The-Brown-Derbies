@@ -21,16 +21,16 @@ while IFS= read -r -d '' song_dir; do
   has_mscz=0
   has_pdf=0
 
-  if find "$song_dir/source" -maxdepth 1 -type f -name '*.mscz' 2>/dev/null | grep -q .; then
+  if find "$song_dir" -maxdepth 1 -type f -name '*.mscz' 2>/dev/null | grep -q .; then
     has_mscz=1
   fi
 
-  if find "$song_dir/exports" -maxdepth 1 -type f -name '*.pdf' 2>/dev/null | grep -q .; then
+  if find "$song_dir" -maxdepth 1 -type f -name '*.pdf' 2>/dev/null | grep -q .; then
     has_pdf=1
   fi
 
   if [[ "$has_mscz" -eq 0 || "$has_pdf" -eq 0 ]]; then
-    echo "ERROR: $name must include at least one .mscz in source/ and one .pdf in exports/"
+    echo "ERROR: $name must include at least one .mscz and one .pdf in songs/$name/"
     fail=1
   fi
 done < <(find "$SONGS_DIR" -mindepth 1 -maxdepth 1 -type d -print0)

@@ -6,7 +6,7 @@ Expected structure:
 
 ```text
 songs/<song-slug>/
-  source/<song-slug>.mscz
-  exports/<song-slug>.pdf
+  <song-slug>.mscz
+  <song-slug>.pdf
   notes/changelog.md
 ```

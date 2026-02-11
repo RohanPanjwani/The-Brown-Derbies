@@ -6,7 +6,7 @@ Add songs here so members can quickly find the latest charts.
 
 | Song | Folder | Source (`.mscz`) | PDF |
 |---|---|---|---|
-| O Derbies Rough Final | `songs/o-derbies-rough-final/` | `songs/o-derbies-rough-final/source/o-derbies-rough-final.mscz` | `songs/o-derbies-rough-final/exports/o-derbies-rough-final.pdf` |
+| O Derbies Rough Final | `songs/o-derbies-rough-final/` | `songs/o-derbies-rough-final/o-derbies-rough-final.mscz` | `songs/o-derbies-rough-final/o-derbies-rough-final.pdf` |
 
 ## How to Add an Entry
 
